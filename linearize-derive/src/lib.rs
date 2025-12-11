@@ -1,5 +1,5 @@
 use {
-    proc_macro2::{Ident, Span, TokenStream, TokenTree},
+    proc_macro2::{Ident, Literal, Span, TokenStream, TokenTree},
     quote::{quote, quote_spanned},
     syn::{
         parse::{Parse, ParseStream},
@@ -208,7 +208,7 @@ struct PartialLinearized {
     delinearize: TokenStream,
     const_linearize: TokenStream,
     const_delinearize: TokenStream,
-    max_len: TokenStream,
+    max_len: Option<TokenStream>,
 }
 
 struct FullyLinearized {
@@ -294,6 +294,10 @@ fn build_linearize_struct(
             { #(#parts)* }
         }
     };
+    let mut max_len = Some(max_len);
+    if fields.is_empty() {
+        max_len = None;
+    }
     PartialLinearized {
         linearize: make_linearize(&linearize_parts),
         delinearize: make_delinearize(&delinearize_parts),
@@ -314,6 +318,7 @@ impl StructInput {
             const_delinearize,
             max_len,
         } = build_linearize_struct(input, &self.fields, &b0);
+        let max_len = max_len.unwrap_or_else(|| quote!(1usize));
         let mut consts = vec![];
         consts.push(quote! { const B0: usize = 0; });
         consts.push(quote! { const B1: usize = #max_len; });
@@ -338,6 +343,8 @@ impl EnumInput {
         let mut consts = vec![];
         consts.push(quote! { const B0: usize = 0; });
         let mut prev_const_name = Ident::new("B0", Span::mixed_site());
+        let mut const_base = prev_const_name.clone();
+        let mut const_base_offset = 0;
         let mut const_names = vec![prev_const_name.clone()];
         for (variant_idx, variant) in self.variants.iter().enumerate() {
             let mut exposition = vec![];
@@ -359,7 +366,14 @@ impl EnumInput {
                 const_delinearize,
                 max_len,
             } = build_linearize_struct(input, &variant.fields, &prev_const_name);
-            let next_base = quote! { <Self as __C>::#prev_const_name + #max_len };
+            let next_base = match &max_len {
+                Some(len) => quote! { <Self as __C>::#prev_const_name + #len },
+                None => {
+                    const_base_offset += 1;
+                    let offset = Literal::usize_unsuffixed(const_base_offset);
+                    quote! { <Self as __C>::#const_base + #offset }
+                }
+            };
             let ident = &variant.ident;
             linearize_cases.push(quote! {
                 Self::#ident #exposition => {
@@ -410,6 +424,10 @@ impl EnumInput {
             }
             prev_const_name = const_name;
             const_names.push(prev_const_name.clone());
+            if max_len.is_some() {
+                const_base = prev_const_name.clone();
+                const_base_offset = 0;
+            }
         }
         let make_linearize = |cases: &[TokenStream]| {
             if self.variants.is_empty() {
