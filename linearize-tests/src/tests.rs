@@ -13,6 +13,7 @@ mod serde;
 mod variants;
 
 mod test {
+    #[expect(dead_code)]
     struct S {
         a: bool,
         b: u8,

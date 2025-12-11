@@ -31,7 +31,7 @@ fn main() {
 
 ## MSRV
 
-The MSRV is `max(1.83, stable - 3)`.
+The MSRV is `stable - 3`.
 
 ## License
 

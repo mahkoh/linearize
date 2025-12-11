@@ -21,6 +21,7 @@ assert_forwards!(Zeroable + Copy);
 
 macro_rules! assert_not_forwards {
     (($($trait:tt)*), ($($others:tt)*)) => {
+        #[expect(dead_code)]
         const _: () = {
             trait T1 {
                 const A: usize;
