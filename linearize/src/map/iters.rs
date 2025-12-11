@@ -244,6 +244,7 @@ where
     where
         Self: Sized,
     {
+        #[expect(clippy::double_ended_iterator_last)]
         self.iter.last().map(|(i, v)| {
             let k = unsafe {
                 // SAFETY: i was returned by self.iter
