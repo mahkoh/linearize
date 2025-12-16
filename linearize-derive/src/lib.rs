@@ -434,7 +434,7 @@ impl EnumInput {
                 quote! {
                     #[cold]
                     const fn unreachable() -> ! {
-                        unsafe { core::hint::unreachable_unchecked() }
+                        unsafe { ::core::hint::unreachable_unchecked() }
                     }
                     unreachable()
                 }
@@ -453,7 +453,7 @@ impl EnumInput {
                     _ => {
                         #[cold]
                         const fn unreachable() -> ! {
-                            unsafe { core::hint::unreachable_unchecked() }
+                            unsafe { ::core::hint::unreachable_unchecked() }
                         }
                         unreachable()
                     },
