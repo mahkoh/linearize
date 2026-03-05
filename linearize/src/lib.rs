@@ -201,7 +201,7 @@ pub mod iter {
     //!
     //! This module exists only to keep the top-level namespace clean.
     pub use crate::{
-        map::iters::{IntoIter, Iter, IterMut},
+        map::iters::{IntoIter, IntoValues, Iter, IterMut},
         variants::Variants,
     };
 }
