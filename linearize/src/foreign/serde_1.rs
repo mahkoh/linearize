@@ -8,7 +8,7 @@
 
 mod default {
     use {
-        crate::{Linearize, LinearizeExt, StaticCopyMap, StaticMap},
+        crate::{Linearize, StaticCopyMap, StaticMap},
         core::{
             fmt::{Debug, Display, Formatter},
             marker::PhantomData,
@@ -74,15 +74,11 @@ mod default {
             while let Some((k, v)) = map.next_entry::<L, T>()? {
                 res[k] = Some(v);
             }
-            for (idx, v) in res.deref().iter().enumerate() {
-                if v.is_none() {
-                    return Err(Error::custom(MissingKey(L::from_linear(idx).unwrap())));
-                }
-            }
-            Ok(res.map_values(|v| unsafe {
-                // SAFETY: We just checked that v is Some.
-                v.unwrap_unchecked()
-            }))
+
+            let mut res = res.into_values();
+            Ok(crate::static_map! { k => {
+                res.next().flatten().ok_or(Error::custom(MissingKey(k)))?
+            }})
         }
     }
 
