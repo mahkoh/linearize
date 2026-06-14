@@ -9,6 +9,7 @@ mod linearize_ext;
 mod linearized;
 mod r#macro;
 mod map;
+mod postcard;
 mod rand;
 mod serde;
 mod variants;

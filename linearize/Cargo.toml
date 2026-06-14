@@ -12,7 +12,7 @@ rust-version = "1.83.0"
 
 [features]
 default = ["std"]
-all = ["std", "alloc", "derive", "serde-1", "arbitrary-1", "bytemuck-1", "rand-0_8", "rand-0_9"]
+all = ["std", "alloc", "derive", "serde-1", "arbitrary-1", "bytemuck-1", "rand-0_8", "rand-0_9", "postcard-experimental-1"]
 std = ["alloc"]
 alloc = ["rand-0_8?/alloc", "rand-0_9?/alloc"]
 derive = ["dep:linearize-derive"]
@@ -22,6 +22,7 @@ arbitrary-1 = ["dep:arbitrary-1"]
 bytemuck-1 = ["dep:bytemuck-1"]
 rand-0_8 = ["dep:rand-0_8"]
 rand-0_9 = ["dep:rand-0_9"]
+postcard-experimental-1 = ["dep:postcard-1"]
 
 [package.metadata.docs.rs]
 all-features = true
@@ -34,6 +35,7 @@ arbitrary-1 = { package = "arbitrary", version = "1.4", default-features = false
 bytemuck-1 = { package = "bytemuck", version = "1.9", default-features = false, optional = true }
 rand-0_8 = { package = "rand", version = "0.8.3", default-features = false, optional = true }
 rand-0_9 = { package = "rand", version = "0.9", default-features = false, optional = true }
+postcard-1 = { package = "postcard", version = "1", default-features = false, features = ["experimental-derive"], optional = true }
 
 [build-dependencies]
 version_check = "0.9.5"
