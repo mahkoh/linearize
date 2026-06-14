@@ -4,6 +4,7 @@ mod arbitrary;
 mod bytemuck;
 mod copy_map;
 mod core_addressing;
+mod defmt;
 mod derive;
 mod linearize_ext;
 mod linearized;

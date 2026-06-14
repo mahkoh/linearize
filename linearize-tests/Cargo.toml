@@ -13,6 +13,7 @@ rand = "0.8.5"
 bytemuck = "1.19.0"
 arbitrary = "1.4.1"
 postcard = { version = "1", default-features = false, features = ["experimental-derive"] }
+defmt = "1"
 
 [build-dependencies]
 version_check = "0.9.5"
