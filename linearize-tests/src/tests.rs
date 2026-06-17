@@ -11,7 +11,9 @@ mod linearized;
 mod r#macro;
 mod map;
 mod postcard;
-mod rand;
+mod rand_0_10;
+mod rand_0_8;
+mod rand_0_9;
 mod serde;
 mod variants;
 

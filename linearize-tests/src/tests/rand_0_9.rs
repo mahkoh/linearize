@@ -1,8 +1,8 @@
 use {
     linearize::{static_map, StaticCopyMap, StaticMap},
-    rand::{
-        distributions::{
-            uniform::SampleUniform, Bernoulli, Distribution, Open01, OpenClosed01, Standard,
+    rand_0_9::{
+        distr::{
+            uniform::SampleUniform, Bernoulli, Distribution, Open01, OpenClosed01, StandardUniform,
             Uniform,
         },
         random,
@@ -32,7 +32,7 @@ macro_rules! assert_forwards {
     };
 }
 
-assert_forwards!(Standard);
+assert_forwards!(StandardUniform);
 assert_forwards!(Open01);
 assert_forwards!(OpenClosed01);
 assert_forwards!(Bernoulli);

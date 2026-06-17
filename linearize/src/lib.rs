@@ -69,6 +69,7 @@
 //! - `bytemuck-1`: Implements `NoUninit`, `Zeroable`, and `AnyBitPattern` from bytemuck 1.x for the map types.
 //! - `rand-0_8`: Implements various distributions from rand 0.8.x for the map types.
 //! - `rand-0_9`: Implements various distributions from rand 0.9.x for the map types.
+//! - `rand-0_10`: Implements various distributions from rand 0.10.x for the map types.
 //! - `postcard-experimental-1`: Implements `MaxSize` from postcard 1.x for the map types.
 //! - `defmt-1`: Implements `Format` from defmt 1.x for the map types.
 

@@ -151,9 +151,21 @@ pub(crate) mod iters;
 /// - [`Bernoulli`](rand_0_9::distr::Bernoulli)
 /// - [`Open01`](rand_0_9::distr::Open01)
 /// - [`OpenClosed01`](rand_0_9::distr::OpenClosed01)
-/// - [`Standard`](rand_0_9::distr::StandardUniform)
+/// - [`StandardUniform`](rand_0_9::distr::StandardUniform)
 /// - [`Uniform`](rand_0_9::distr::Uniform)
 /// - [`WeightedIndex`](rand_0_9::distr::weighted::WeightedIndex)
+///
+/// If the `rand-0_10` feature is enabled, the
+/// [`Distribution<StaticMap<L, T>>`](rand_0_10::distr::Distribution) trait is
+/// implemented for the following distributions by forwarding to the underlying
+/// `[T; L::LENGTH]`:
+///
+/// - [`Bernoulli`](rand_0_10::distr::Bernoulli)
+/// - [`Open01`](rand_0_10::distr::Open01)
+/// - [`OpenClosed01`](rand_0_10::distr::OpenClosed01)
+/// - [`StandardUniform`](rand_0_10::distr::StandardUniform)
+/// - [`Uniform`](rand_0_10::distr::Uniform)
+/// - [`WeightedIndex`](rand_0_10::distr::weighted::WeightedIndex)
 ///
 /// # Copy Trait
 ///
