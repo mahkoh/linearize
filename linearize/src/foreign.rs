@@ -2,6 +2,10 @@
 mod arbitrary_1;
 #[cfg(feature = "bytemuck-1")]
 mod bytemuck_1;
+#[cfg(feature = "defmt-1")]
+mod defmt_1;
+#[cfg(feature = "postcard-experimental-1")]
+mod postcard_1;
 #[cfg(feature = "rand-0_8")]
 mod rand_0_8;
 #[cfg(feature = "rand-0_9")]
