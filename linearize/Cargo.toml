@@ -8,7 +8,7 @@ description = "Types that are enumerable and an array-backed map"
 keywords = ["data-structure", "no_std", "enum"]
 categories = ["data-structures", "no-std"]
 readme = "../README.md"
-rust-version = "1.83.0"
+rust-version = "1.85.0"
 
 [features]
 default = ["std"]
