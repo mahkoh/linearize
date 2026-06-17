@@ -24,4 +24,4 @@ jobs:
       - name: Build
         run: |
           cd linearize
-          cargo hack build --feature-powerset
+          cargo hack build --each-feature
