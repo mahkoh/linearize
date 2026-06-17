@@ -9,7 +9,9 @@ static_assertions = "1.1.0"
 linearize = { path = "../linearize", features = ["all"] }
 serde = { version = "1.0.215", features = ["derive"] }
 serde_json = "1.0.133"
-rand = "0.8.5"
+rand-0_8 = { package = "rand", version = "0.8" }
+rand-0_9 = { package = "rand", version = "0.9" }
+rand-0_10 = { package = "rand", version = "0.10" }
 bytemuck = "1.19.0"
 arbitrary = "1.4.1"
 postcard = { version = "1", default-features = false, features = ["experimental-derive"] }
