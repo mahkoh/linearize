@@ -645,6 +645,28 @@ where
     }
 }
 
+impl<L, T, U> StaticMap<L, (T, U)>
+where
+    L: Linearize + ?Sized,
+{
+    #[inline]
+    pub fn unzip(self) -> (StaticMap<L, T>, StaticMap<L, U>)
+    where
+        L: Sized,
+    {
+        let (left, right) = L::Storage::<T>::unzip::<U>(self.0);
+        (StaticMap(left), StaticMap(right))
+    }
+
+    #[inline]
+    pub fn zip(lhs: StaticMap<L, T>, rhs: StaticMap<L, U>) -> Self
+    where
+        L: Sized,
+    {
+        StaticMap(lhs.0.zip(rhs.0))
+    }
+}
+
 impl<L, T> Deref for StaticMap<L, T>
 where
     L: Linearize + ?Sized,
