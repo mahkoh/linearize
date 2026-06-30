@@ -181,6 +181,42 @@ pub struct StaticMap<L, T>(
 where
     L: Linearize + ?Sized;
 
+/// This custom implementation is guaranteed to always match the exact compiler generated
+/// [Send] implementation thanks to the safety requirement
+/// that `<L as Linearize>::Storage<T>` is always just `[T;N]` for some `N`.
+///
+/// But in some generic contexts (when generic over `L` but with `T : Send`)
+/// the compiler cannot tell that `<L as Linearize>::Storage<T> : Send` because it
+/// doesn't know that `<L as Linearize>::Storage<T>` must be `[T;N]`.
+///
+/// This is necessary for the exact same reason why [StaticCopyMap] exists,
+/// but no one wants a `StaticSendMap` or worse `StaticSendSyncCopyMap`,
+/// and thankfully this can be avoided thanks to this manual implementation.
+unsafe impl<L, T> Send for StaticMap<L, T>
+where
+    L: Linearize + ?Sized,
+    T: Send,
+{
+}
+
+/// This custom implementation is guaranteed to always match the exact compiler generated
+/// [Sync] implementation thanks to the safety requirement
+/// that `<L as Linearize>::Storage<T>` is always just `[T;N]` for some `N`.
+///
+/// But in some generic contexts (when generic over `L` but with `T : Sync`)
+/// the compiler cannot tell that `<L as Linearize>::Storage<T> : Sync` because it
+/// doesn't know that `<L as Linearize>::Storage<T>` must be `[T;N]`.
+///
+/// This is necessary for the exact same reason why [StaticCopyMap] exists,
+/// but no one wants a `StaticSyncMap` or worse `StaticSendSyncCopyMap`,
+/// and thankfully this can be avoided thanks to this manual implementation.
+unsafe impl<L, T> Sync for StaticMap<L, T>
+where
+    L: Linearize + ?Sized,
+    T: Sync,
+{
+}
+
 impl<L, T> StaticMap<L, T>
 where
     L: Linearize + ?Sized,
