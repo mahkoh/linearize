@@ -14,6 +14,7 @@ mod postcard;
 mod rand_0_10;
 mod rand_0_8;
 mod rand_0_9;
+mod send_sync;
 mod serde;
 mod variants;
 
