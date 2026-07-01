@@ -8,6 +8,7 @@ use {
         mem::MaybeUninit,
         ptr,
     },
+    std::mem::{transmute_copy, ManuallyDrop},
 };
 
 pub trait Storage<L, T>:
@@ -41,6 +42,10 @@ where
     fn each_mut(&mut self) -> <L as Linearize>::Storage<&mut T>;
 
     fn map<U>(self, cb: impl FnMut(usize, T) -> U) -> <L as Linearize>::Storage<U>;
+
+    fn zip<U>(self, rhs: L::Storage<U>) -> L::Storage<(T, U)>;
+
+    fn unzip<U>(zipped: L::Storage<(T, U)>) -> (Self, L::Storage<U>);
 
     fn clone(&self) -> Self
     where
@@ -108,6 +113,16 @@ where
     fn as_storage(&self) -> &L::Storage<T>;
 
     fn as_storage_mut(&mut self) -> &mut L::Storage<T>;
+}
+
+fn storage_from_array<T, U, L, const N: usize>(array: [U; N]) -> L::Storage<U>
+where
+    L: Linearize<Storage<T> = [T; N]> + ?Sized,
+{
+    // SAFETY:
+    // - if L::Storage<T> = [T;N], then by definition L::Storage<U> = [U;N]
+    // - thanks to ManuallyDrop, only one valid copy will ever exist
+    unsafe { transmute_copy(&ManuallyDrop::new(array)) }
 }
 
 impl<L, T, const N: usize> Storage<L, T> for [T; N]
@@ -230,6 +245,53 @@ where
             // - With X = U it follows that L::Storage<U> = [U; L::LENGTH] = [U; N].
             ptr::read(res_ptr as *const L::Storage<U>)
         }
+    }
+
+    fn zip<U>(self, rhs: L::Storage<U>) -> L::Storage<(T, U)> {
+        let mut left = self.into_iter();
+        let mut right = rhs.into_iter();
+        let out: [(T, U); N] = core::array::from_fn(|_| {
+            // SAFETY:
+            // both left and right are core::array::IntoIter<_,N> and will yield exaclty
+            // N elements, and the output also contains exatcly N elements
+            unsafe {
+                (
+                    left.next().unwrap_unchecked(),
+                    right.next().unwrap_unchecked(),
+                )
+            }
+        });
+        // the iterators are always empty so there is nothing to drop,
+        // but there have been examples where the optimizer can struggle to realize
+        // that this is always true, and this is free
+        core::mem::forget((left, right));
+        storage_from_array::<T, (T, U), L, N>(out)
+    }
+
+    fn unzip<U>(zipped: L::Storage<(T, U)>) -> (Self, L::Storage<U>) {
+        // SAFETY:
+        // - L::Storage<(T,U)> = [(T,U);N] by the where clause of this impl.
+        // - thanks to ManuallyDrop, only one copy will ever exist
+        let as_manually_drop: [ManuallyDrop<(T, U)>; N] =
+            unsafe { transmute_copy(&ManuallyDrop::new(zipped)) };
+        let (out1, out2) = (
+            std::array::from_fn(|i| 
+                // SAFETY:
+                // each item is only read once, and thanks to the ManuallyDrop never 
+                // accessed again
+                unsafe { (&raw const as_manually_drop[i].0).read() }
+            ),
+            std::array::from_fn(|i| 
+                // SAFETY:
+                // each item is only read once, and thanks to the ManuallyDrop never 
+                // accessed again
+                unsafe { (&raw const as_manually_drop[i].1).read() 
+            }),
+        );
+        (
+            storage_from_array::<T, T, L, N>(out1),
+            storage_from_array::<T, U, L, N>(out2),
+        )
     }
 
     fn clone(&self) -> Self
