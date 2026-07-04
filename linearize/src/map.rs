@@ -15,6 +15,7 @@ use {
         mem,
         ops::{Deref, DerefMut, Index, IndexMut},
     },
+    std::panic::{RefUnwindSafe, UnwindSafe},
 };
 
 pub(crate) mod iters;
@@ -180,6 +181,80 @@ pub struct StaticMap<L, T>(
 )
 where
     L: Linearize + ?Sized;
+
+// This impl exists to work around the compiler adding an L: <L as Linearize>::Storage<T>: Send bound.
+//
+// SAFETY:
+// - T is Send by the where clause.
+// - Therefore [T; N] is Send for all N.
+// - By the safety requirements of Linearize, L::Storage<T> = [T; L::LENGTH].
+// - Therefore L::Storage<T> is Send.
+// - StaticMap<L, T> has a single, public L::Storage<T> field and no Drop impl.
+// - Therefore, StaticMap<L, T> can be safely converted from and into
+//   L::Storage<T>.
+// - Therefore, StaticMap<L, T> could already be Sent by converting to
+//   L::Storage<T> at the time of the operation.
+// - Therefore, this impl does not add any Send capability.
+unsafe impl<L, T> Send for StaticMap<L, T>
+where
+    L: Linearize + ?Sized,
+    T: Send,
+{
+}
+
+// This impl exists to work around the compiler adding an <L as Linearize>::Storage<T>: Sync bound.
+//
+// SAFETY:
+//
+// - T is Sync by the where clause.
+// - Therefore [T; N] is Sync for all N.
+// - By the safety requirements of Linearize, L::Storage<T> = [T; L::LENGTH].
+// - Therefore L::Storage<T> is Sync.
+// - Therefore &L::Storage<T> is Send.
+// - &StaticMap<L, T> can safely be created from &L::Storage<T> and converted to
+//   &L::Storage<T>.
+// - Therefore &StaticMap<L, T> could already be Sent by doing this conversion at the
+//   time of the operation.
+// - Therefore &StaticMap<L, T> is Send.
+// - Therefore StaticMap<L, T> is Sync.
+unsafe impl<L, T> Sync for StaticMap<L, T>
+where
+    L: Linearize + ?Sized,
+    T: Sync,
+{
+}
+
+// This impl exists to work around the compiler adding an <L as Linearize>::Storage<T>: Unpin bound.
+//
+// SAFETY:
+// this is safe, but it is imortant to note that a written it still allows
+// StaticMap to be structurally pinning over its elements,
+// where an unconditional impl would not.
+// rational : see the Sync and Send impl
+impl<L, T> Unpin for StaticMap<L, T>
+where
+    L: Linearize + ?Sized,
+    T: Unpin,
+{
+}
+
+// This impl exists to work around the compiler adding an <L as Linearize>::Storage<T>: UnwindSafe bound.
+// rational : see the Sync and Send impl
+impl<L, T> UnwindSafe for StaticMap<L, T>
+where
+    L: Linearize + ?Sized,
+    T: UnwindSafe,
+{
+}
+
+// This impl exists to work around the compiler adding an <L as Linearize>::Storage<T>: RefUnwindSafe bound.
+// rational : see the Sync and Send impl
+impl<L, T> RefUnwindSafe for StaticMap<L, T>
+where
+    L: Linearize + ?Sized,
+    T: RefUnwindSafe,
+{
+}
 
 impl<L, T> StaticMap<L, T>
 where
