@@ -135,7 +135,7 @@ checksum = "3eaf3ede3fee6db1a4c2ee091bf8a8b4dccdc6d17f656fb07896ee72867612f2"
 
 [[package]]
 name = "linearize"
-version = "0.1.7"
+version = "0.1.8"
 dependencies = [
  "arbitrary",
  "bytemuck",
@@ -153,7 +153,7 @@ dependencies = [
 
 [[package]]
 name = "linearize-derive"
-version = "0.2.1"
+version = "0.2.2"
 dependencies = [
  "proc-macro2",
  "quote",
