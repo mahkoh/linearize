@@ -21,6 +21,6 @@ jobs:
       - name: Miri
         run: rustup component add miri
       - name: Build
-        run: cargo build --all-features --verbose
+        run: RUSTFLAGS="-Znext-solver=no" cargo build --all-features --verbose
       - name: Run tests
-        run: cargo miri test --all-features
+        run: RUSTFLAGS="-Znext-solver=no" cargo miri test --all-features
