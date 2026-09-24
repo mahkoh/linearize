@@ -64,6 +64,12 @@ use {
 ///
 /// If the type contains fields, the generated code will still be reasonably efficient.
 ///
+/// # Variant Order
+///
+/// If the type is a C-style enum, the implementation of `linearize()` produced by this
+/// macro will order the variants in the same order as they are defined, independent of
+/// the discriminants, either default or specified.
+///
 /// # Limitations
 ///
 /// While this macro fully supports types with generics, the generated output will not
