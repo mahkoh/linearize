@@ -28,7 +28,7 @@ fn copy_map() {
         false => 11,
         true => 22,
     };
-    let value = serde_json::to_value(&map).unwrap();
+    let value = serde_json::to_value(map).unwrap();
     assert_eq!(
         value,
         json!({
